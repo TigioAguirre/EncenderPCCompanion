@@ -1,0 +1,27 @@
+*.iml
+.gradle/
+/local.properties
+/.idea/
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Android Studio / IntelliJ
+*.hprof
+.navigation/
+
+# Salidas de compilación
+*/build/
+app/release/
+app/debug/
+
+# Keystore (nunca subir claves de firma reales al repo)
+*.jks
+*.keystore
+
+# Archivos de entorno / secretos locales
+*.env
+secrets.properties

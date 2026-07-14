@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/bg_app">
+
+    <!-- Cabecera con progreso: "dónde estoy" siempre visible -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_header"
+        android:paddingHorizontal="@dimen/space_lg"
+        android:paddingTop="@dimen/space_lg"
+        android:paddingBottom="@dimen/space_lg">
+
+        <TextView
+            android:id="@+id/textStepProgress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tutorial_step_of"
+            android:textColor="@color/text_on_dark_secondary"
+            android:textSize="12sp"
+            android:fontFamily="@font/manrope_bold"
+            android:letterSpacing="0.06" />
+
+        <LinearLayout
+            android:id="@+id/dotsContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/space_sm" />
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/space_lg">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:padding="@dimen/space_lg">
+
+                <ImageView
+                    android:id="@+id/imageStepIcon"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_marginBottom="@dimen/space_md"
+                    android:src="@drawable/ic_large_encenderpc"
+                    android:contentDescription="@null" />
+
+                <TextView
+                    android:id="@+id/textStepTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="19sp"
+                    android:fontFamily="@font/manrope_bold"
+                    android:textColor="@color/text_primary"
+                    tools:text="Título del paso" />
+
+                <TextView
+                    android:id="@+id/textStepDesc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_sm"
+                    style="@style/Text.Body"
+                    android:textColor="@color/text_secondary" />
+
+                <LinearLayout
+                    android:id="@+id/chipStepStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/chip_warning"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="6dp"
+                    android:layout_marginTop="@dimen/space_md"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:id="@+id/iconStepStatus"
+                        android:layout_width="@dimen/icon_status_size"
+                        android:layout_height="@dimen/icon_status_size"
+                        android:layout_marginEnd="4dp"
+                        android:src="@drawable/ic_alert_circle"
+                        android:contentDescription="@null" />
+
+                    <TextView
+                        android:id="@+id/textStepStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/status_chip_missing"
+                        style="@style/Text.Caption" />
+                </LinearLayout>
+
+                <EditText
+                    android:id="@+id/editStepUrl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_md"
+                    android:background="@drawable/bg_card_outlined"
+                    android:padding="@dimen/space_sm"
+                    android:hint="@string/url_input_hint"
+                    android:inputType="textUri"
+                    android:maxLines="3"
+                    android:textSize="14sp"
+                    android:autofillHints=""
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/textStepUrlError"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/error_url_invalid"
+                    android:textColor="@color/state_danger"
+                    android:textSize="12sp"
+                    android:fontFamily="@font/manrope_semibold"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnStepAction"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_lg"
+                style="@style/Button.Primary" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/space_lg"
+        android:paddingVertical="@dimen/space_md">
+
+        <Button
+            android:id="@+id/btnStepBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tutorial_back"
+            style="@style/Button.Text" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btnStepSkip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tutorial_skip"
+            style="@style/Button.Text" />
+    </LinearLayout>
+
+</LinearLayout>

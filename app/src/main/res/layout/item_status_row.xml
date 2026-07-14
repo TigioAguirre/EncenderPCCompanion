@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingVertical="@dimen/space_sm">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/iconRow"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginEnd="@dimen/space_sm"
+            android:contentDescription="@null"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/textRowTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="14sp"
+            android:fontFamily="@font/manrope_semibold"
+            android:textColor="@color/text_primary"
+            tools:text="Acceso a notificaciones" />
+
+        <LinearLayout
+            android:id="@+id/chipRowStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/chip_warning"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="5dp">
+
+            <ImageView
+                android:id="@+id/iconRowStatus"
+                android:layout_width="@dimen/icon_status_size"
+                android:layout_height="@dimen/icon_status_size"
+                android:layout_marginEnd="4dp"
+                android:src="@drawable/ic_alert_circle"
+                android:contentDescription="@null" />
+
+            <TextView
+                android:id="@+id/textRowStatus"
+                style="@style/Text.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/status_chip_missing" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnRowAction"
+        style="@style/Button.Secondary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_sm"
+        android:minHeight="0dp"
+        android:paddingVertical="8dp"
+        android:text="@string/btn_grant" />
+
+</LinearLayout>

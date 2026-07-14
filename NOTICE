@@ -1,0 +1,27 @@
+EncenderPC companion
+Copyright 2026 [TU NOMBRE O USUARIO DE GITHUB]
+
+Este producto incluye software desarrollado bajo la Apache License 2.0
+(ver el archivo LICENSE).
+
+------------------------------------------------------------------------
+Recursos de terceros incluidos en este repositorio
+------------------------------------------------------------------------
+
+1) Tipografía "Manrope"
+   Copyright 2018 The Manrope Project Authors
+   (https://github.com/sharanda/manrope)
+   Distribuida bajo la SIL Open Font License, Version 1.1.
+   Texto completo de la licencia: app/src/main/assets/licenses/manrope_OFL.txt
+   Los archivos .ttf se encuentran en: app/src/main/res/font/
+
+   La OFL permite usar, estudiar, modificar y redistribuir la fuente
+   libremente, incluso en software comercial, siempre que no se venda
+   la fuente por sí sola de forma aislada y que las versiones
+   modificadas no usen el nombre "Manrope" sin autorización.
+
+------------------------------------------------------------------------
+
+Este archivo NOTICE se provee únicamente con fines informativos y no
+modifica los términos de la Apache License 2.0 bajo la cual se
+distribuye el código de este proyecto.

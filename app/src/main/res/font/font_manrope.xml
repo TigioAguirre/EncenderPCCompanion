@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Familia tipográfica "Manrope": geométrica, redondeada y de gran
+    legibilidad en pantallas pequeñas, muy cercana en carácter a la
+    MiSans que usa Xiaomi por defecto en Mi Fitness / Mi Band (MiSans es
+    una fuente propietaria de Xiaomi, no distribuible). Manrope es de
+    licencia libre (SIL Open Font License, ver assets/licenses/manrope_OFL.txt)
+    por lo que puede empaquetarse sin problema dentro del APK.
+-->
+<font-family xmlns:android="http://schemas.android.com/apk/res/android">
+    <font
+        android:fontStyle="normal"
+        android:fontWeight="400"
+        android:font="@font/manrope_regular" />
+    <font
+        android:fontStyle="normal"
+        android:fontWeight="500"
+        android:font="@font/manrope_medium" />
+    <font
+        android:fontStyle="normal"
+        android:fontWeight="600"
+        android:font="@font/manrope_semibold" />
+    <font
+        android:fontStyle="normal"
+        android:fontWeight="700"
+        android:font="@font/manrope_bold" />
+    <font
+        android:fontStyle="normal"
+        android:fontWeight="800"
+        android:font="@font/manrope_extrabold" />
+</font-family>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ic_launcher_background">#17233F</color>
+
+    <!-- Tema Oscuro Xiaomi Tech -->
+    <color name="bg_app">#0B1120</color> 
+    <color name="bg_card">#17233F</color> 
+    
+    <!-- Tipografías -->
+    <color name="text_primary">#F8FAFC</color>
+    <color name="text_secondary">#94A3B8</color>
+    <color name="text_on_dark_secondary">#64748B</color>
+
+    <!-- Estados / Chips -->
+    <color name="state_ok">#10B981</color>
+    <color name="state_warning">#F59E0B</color>
+    <color name="state_danger">#EF4444</color>
+
+    <!-- Botones y acentos (idéntico al azul del ícono de la app) -->
+    <color name="colorAccent">#2882EB</color>
+
+    <!-- Separadores dentro de tarjetas -->
+    <color name="divider">#1E293B</color>
+</resources>
