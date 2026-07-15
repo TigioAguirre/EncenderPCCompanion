@@ -1,0 +1,56 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- devices/{deviceId} ---
+    // Documento de cada PC registrada.
+    // Campos: ownerUid, name, status ("online"|"offline"), lastSeen (timestamp), createdAt
+    match /devices/{deviceId} {
+
+      // El dueño puede leer sus PCs desde la app.
+      allow read: if request.auth != null && request.auth.uid == resource.data.ownerUid;
+
+      // El dueño crea/borra la PC desde la app (registro y "eliminar PC").
+      allow create: if request.auth != null
+                    && request.auth.uid == request.resource.data.ownerUid
+                    && request.resource.data.status == "offline";
+
+      allow delete: if request.auth != null && request.auth.uid == resource.data.ownerUid;
+
+      // Solo el agente de Windows (autenticado con custom token que trae
+      // el claim "deviceId") puede actualizar, y SOLO los campos de estado.
+      // No puede cambiar ownerUid, name, ni borrar el documento.
+      allow update: if request.auth != null
+                    && request.auth.token.deviceId == deviceId
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['status', 'lastSeen']);
+    }
+
+    // --- pairingCodes/{code} ---
+    // Solo las Cloud Functions (Admin SDK) leen/escriben acá.
+    // El cliente nunca accede directo a esta colección.
+    match /pairingCodes/{code} {
+      allow read, write: if false;
+    }
+
+    // --- users/{uid} ---
+    // Guarda los tokens FCM del usuario para poder mandarle push.
+    match /users/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+
+      // El propio usuario puede actualizar SOLO su lista de tokens FCM
+      // (el resto de escrituras administrativas las hacen las Functions).
+      allow update: if request.auth != null
+                    && request.auth.uid == uid
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['fcmTokens']);
+
+      // El doc se crea solo (con merge:true) la primera vez que la app
+      // llama a registerFcmToken; esa función usa el Admin SDK, que
+      // no pasa por estas reglas. Por eso acá bloqueamos "create" directo
+      // desde el cliente.
+      allow create: if false;
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1099044617517",
+    "project_id": "encenderpc-companion",
+    "storage_bucket": "encenderpc-companion.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1099044617517:android:0d29563dc8cd5da06567a4",
+        "android_client_info": {
+          "package_name": "com.example.bandcolorreact"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBX-rElrgRASx2n5yoXYvNtL3dzLw7UIwk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

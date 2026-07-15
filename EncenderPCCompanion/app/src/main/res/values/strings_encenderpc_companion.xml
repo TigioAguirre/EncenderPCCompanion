@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android fusiona automáticamente TODOS los archivos .xml que estén
+  dentro de res/values/, sin importar el nombre del archivo. Así que
+  con copiar este archivo tal cual a app/src/main/res/values/ ya
+  alcanza — no hace falta pegar nada a mano dentro de tu strings.xml
+  existente.
+-->
+<resources>
+    <!-- Login -->
+    <string name="login_subtitle">Iniciá sesión para ver y controlar tus PCs</string>
+    <string name="login_email_hint">Email</string>
+    <string name="login_password_hint">Contraseña</string>
+    <string name="login_action">Ingresar</string>
+    <string name="login_register_action">Crear cuenta</string>
+    <string name="login_error_validation">Ingresá un email y una contraseña de al menos 6 caracteres</string>
+    <string name="login_error_generic">No se pudo iniciar sesión. Intentá de nuevo</string>
+
+    <!-- Lista de dispositivos -->
+    <string name="devices_title">Tus PCs</string>
+    <string name="devices_subtitle">Estado en tiempo real de las PCs que registraste</string>
+    <string name="devices_add_action">Agregar PC</string>
+    <string name="devices_empty_state">Todavía no agregaste ninguna PC.\nTocá el botón + para emparejar la primera.</string>
+    <string name="devices_unnamed">PC sin nombre</string>
+    <string name="devices_status_online">Encendida ahora</string>
+    <string name="devices_status_offline">Apagada</string>
+    <string name="devices_status_offline_since">Apagada · última señal %1$s</string>
+    <string name="devices_error_loading">No se pudieron cargar tus PCs</string>
+
+    <!-- Agregar dispositivo -->
+    <string name="add_device_title">Agregar PC</string>
+    <string name="add_device_subtitle">Le vamos a poner nombre y generar un código para emparejar el agente de Windows</string>
+    <string name="add_device_name_hint">Ej: PC Escritorio</string>
+    <string name="add_device_generate_code">Generar código</string>
+    <string name="add_device_error_name_required">Ponele un nombre a la PC</string>
+    <string name="add_device_error_generic">No se pudo generar el código. Intentá de nuevo</string>
+    <string name="add_device_code_label">Tu código de emparejamiento</string>
+    <string name="add_device_code_instructions">En la PC, corré \"EncenderPCAgent.exe pair\" y pegá este código cuando te lo pida.</string>
+    <string name="add_device_done">Listo</string>
+
+    <!-- Notificaciones de estado de PC vía FCM -->
+    <string name="pc_status_channel_name">EncenderPC companion - Estado de PC</string>
+    <string name="pc_status_channel_desc">Avisa cuando una de tus PCs se enciende, detectado por el agente de Windows</string>
+    <string name="pc_status_notification_title">PC encendida</string>
+    <string name="pc_status_notification_body">Una de tus PCs se acaba de encender</string>
+</resources>
