@@ -90,4 +90,20 @@ class DeviceRepository(
             Result.failure(e)
         }
     }
+
+    /**
+     * Borra el documento de la PC directo en Firestore (no hace falta pasar
+     * por una Cloud Function): firestore.rules ya permite `delete` cuando
+     * `resource.data.ownerUid` coincide con el usuario logueado, así que
+     * un intento de borrar una PC ajena es rechazado del lado del servidor
+     * aunque alguien manipule el cliente.
+     */
+    suspend fun deleteDevice(deviceId: String): Result<Unit> {
+        return try {
+            firestore.collection("devices").document(deviceId).delete().await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

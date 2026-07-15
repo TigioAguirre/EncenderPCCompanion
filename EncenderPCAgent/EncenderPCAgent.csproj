@@ -1,19 +1,49 @@
 <Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <RootNamespace>EncenderPCAgent</RootNamespace>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <InvariantGlobalization>true</InvariantGlobalization>
+    <!-- Wizard gráfico (SetupWizardApp / SetupWizardForm) en vez de la consola. -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <!-- WinExe = sin la ventana de consola negra al hacer doble click.
+         "pair" y "uninstall" (modo avanzado por consola) igual funcionan
+         si se invocan desde una consola ya abierta. -->
+    <OutputType>WinExe</OutputType>
     <!-- El nombre visible en Servicios de Windows -->
     <AssemblyName>EncenderPCAgent</AssemblyName>
+
+    <!--
+      Publicación pensada para que el resultado de "dotnet publish -c Release"
+      sea directamente el .exe final que se le entrega al usuario: un solo
+      archivo, sin necesitar el runtime de .NET instalado en su PC.
+      No se pide elevación vía manifiesto (requireAdministrator) a propósito:
+      así el doble click siempre abre primero, y es el propio wizard
+      (SetupWizard/ServiceInstaller) el que pide UAC solo cuando hace falta,
+      con un mensaje explicando por qué.
+    -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+    <!-- builder.Logging.AddEventLog(...) en Program.cs: antes esto lo traía
+         implícito AddWindowsService(); como la reemplazamos por
+         EncenderPcWindowsService, lo referenciamos explícito. -->
+    <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="8.0.0" />
+    <!-- Provee System.ServiceProcess.ServiceBase / PowerBroadcastStatus,
+         usados por EncenderPcWindowsService para escuchar eventos de
+         energía (necesario para detectar el "apagado" híbrido de Inicio
+         rápido, que no dispara Stop/Shutdown). -->
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>

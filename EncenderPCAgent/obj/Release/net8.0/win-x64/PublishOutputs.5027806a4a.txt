@@ -1,3 +1,0 @@
-C:\Program Files\EncenderPCAgent\appsettings.json
-C:\Program Files\EncenderPCAgent\EncenderPCAgent.pdb
-C:\Program Files\EncenderPCAgent\EncenderPCAgent.exe

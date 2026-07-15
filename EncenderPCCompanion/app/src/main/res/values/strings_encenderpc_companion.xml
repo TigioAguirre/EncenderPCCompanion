@@ -26,6 +26,16 @@
     <string name="devices_status_offline">Apagada</string>
     <string name="devices_status_offline_since">Apagada · última señal %1$s</string>
     <string name="devices_error_loading">No se pudieron cargar tus PCs</string>
+    <string name="devices_logout_action">Cerrar sesión</string>
+    <string name="devices_logout_confirm_title">¿Cerrar sesión?</string>
+    <string name="devices_logout_confirm_message">Vas a poder ingresar con otra cuenta después de esto.</string>
+    <string name="devices_delete_action">Eliminar PC</string>
+    <string name="devices_delete_confirm_title">¿Eliminar esta PC?</string>
+    <string name="devices_delete_confirm_message">Vas a tener que volver a emparejarla si querés controlarla de nuevo.</string>
+    <string name="devices_delete_confirm_yes">Eliminar</string>
+    <string name="devices_delete_confirm_cancel">Cancelar</string>
+    <string name="devices_delete_error">No se pudo eliminar la PC. Intentá de nuevo</string>
+    <string name="devices_delete_success">PC eliminada</string>
 
     <!-- Agregar dispositivo -->
     <string name="add_device_title">Agregar PC</string>

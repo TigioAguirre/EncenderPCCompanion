@@ -1,7 +1,15 @@
 <#
-Desinstala el servicio EncenderPCAgent. Correr como Administrador.
+Desinstala el servicio EncenderPCAgent.
+
+Ahora esto es solo un atajo: hace lo mismo que correr
+"EncenderPCAgent.exe uninstall" a mano (doble click no sirve para
+desinstalar porque el .exe interpreta el doble click como "instalar/
+reparar"; hay que pasarle el argumento "uninstall" desde una consola,
+o usar este script).
+
 No borra las credenciales de emparejamiento (C:\ProgramData\EncenderPCAgent)
-por si volves a instalar despues; pasa -BorrarCredenciales para sacarlas tambien.
+por si se vuelve a instalar despues; pasa -BorrarCredenciales para sacarlas
+tambien.
 #>
 
 param(
@@ -10,20 +18,12 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$existing = Get-Service -Name "EncenderPCAgent" -ErrorAction SilentlyContinue
-if ($existing) {
-    Write-Host "Deteniendo y borrando el servicio..."
-    Stop-Service -Name "EncenderPCAgent" -Force -ErrorAction SilentlyContinue
-    sc.exe delete "EncenderPCAgent" | Out-Null
-} else {
-    Write-Host "El servicio EncenderPCAgent no estaba instalado."
+$exe = Join-Path $PSScriptRoot "EncenderPCAgent.exe"
+if (-not (Test-Path $exe)) {
+    throw "No se encontro EncenderPCAgent.exe en esta carpeta."
 }
 
-$installDir = "C:\Program Files\EncenderPCAgent"
-if (Test-Path $installDir) {
-    Write-Host "Borrando $installDir..."
-    Remove-Item -Recurse -Force $installDir
-}
+& $exe uninstall
 
 if ($BorrarCredenciales) {
     $dataDir = "C:\ProgramData\EncenderPCAgent"

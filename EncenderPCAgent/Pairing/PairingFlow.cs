@@ -1,5 +1,6 @@
 using EncenderPCAgent.Config;
 using EncenderPCAgent.Firebase;
+using EncenderPCAgent.Installer;
 
 namespace EncenderPCAgent.Pairing;
 
@@ -29,47 +30,40 @@ public static class PairingFlow
         Console.Write("Ingresá el código de 6 dígitos que te muestra la app: ");
         var code = (Console.ReadLine() ?? "").Trim();
 
-        if (code.Length != 6 || !code.All(char.IsDigit))
+        Console.WriteLine("Validando código...");
+        var result = await PairingService.PairAsync(code, settings);
+
+        if (!result.Success)
         {
-            Console.WriteLine("Ese código no tiene el formato esperado (6 números). Cancelado.");
+            Console.WriteLine();
+            Console.WriteLine($"✖ Falló el emparejamiento: {result.ErrorMessage}");
             return 1;
         }
 
-        using var http = new HttpClient();
-        var pairingClient = new PairingClient(http, settings);
-        var authClient = new FirebaseAuthClient(http, settings);
+        Console.WriteLine();
+        Console.WriteLine("✔ Emparejado correctamente.");
+        Console.WriteLine($"  deviceId: {result.DeviceId}");
+        Console.WriteLine();
 
-        try
+        // Clave para el bug de "queda offline al re-vincular": si el
+        // servicio ya estaba corriendo (con credenciales viejas en
+        // memoria), PairingService ya lo reinició para que relea
+        // device.json ya, en vez de esperar a que alguien reinicie Windows.
+        if (result.ServiceNotInstalled)
         {
-            Console.WriteLine("Validando código...");
-            var pairResult = await pairingClient.PairAsync(code, CancellationToken.None);
-
-            Console.WriteLine("Código válido. Iniciando sesión de la PC...");
-            var signIn = await authClient.SignInWithCustomTokenAsync(pairResult.CustomToken, CancellationToken.None);
-
-            var credentials = new DeviceCredentials
-            {
-                DeviceId = pairResult.DeviceId,
-                IdToken = signIn.IdToken,
-                RefreshToken = signIn.RefreshToken,
-                IdTokenExpiresAtUtc = DateTimeOffset.UtcNow.AddSeconds(signIn.ExpiresInSeconds)
-            };
-
-            DeviceCredentialsStore.Save(credentials);
-
-            Console.WriteLine();
-            Console.WriteLine("✔ Emparejado correctamente.");
-            Console.WriteLine($"  deviceId: {credentials.DeviceId}");
-            Console.WriteLine();
-            Console.WriteLine("Ahora podés iniciar el servicio (si no arranca solo):");
-            Console.WriteLine("  net start EncenderPCAgent");
-            return 0;
+            Console.WriteLine("Todavía no instalaste el servicio en esta PC.");
+            Console.WriteLine("Ejecutá el instalador (doble click en EncenderPCAgent.exe) para instalarlo y arrancarlo.");
         }
-        catch (Exception ex)
+        else if (result.ServiceRestarted)
         {
-            Console.WriteLine();
-            Console.WriteLine($"✖ Falló el emparejamiento: {ex.Message}");
-            return 1;
+            Console.WriteLine("✔ Servicio reiniciado y corriendo con las credenciales nuevas.");
         }
+        else
+        {
+            Console.WriteLine("Para que el cambio tenga efecto ya mismo, corré esto como Administrador:");
+            Console.WriteLine("  net stop EncenderPCAgent && net start EncenderPCAgent");
+        }
+
+        return 0;
     }
 }

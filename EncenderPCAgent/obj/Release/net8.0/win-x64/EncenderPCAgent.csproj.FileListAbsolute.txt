@@ -223,6 +223,7 @@ C:\Users\remag\OneDrive\Desktop\EncenderPC\EncenderPCAgent\obj\Release\net8.0\wi
 C:\Users\remag\OneDrive\Desktop\EncenderPC\EncenderPCAgent\obj\Release\net8.0\win-x64\EncenderPCAgent.AssemblyInfoInputs.cache
 C:\Users\remag\OneDrive\Desktop\EncenderPC\EncenderPCAgent\obj\Release\net8.0\win-x64\EncenderPCAgent.AssemblyInfo.cs
 C:\Users\remag\OneDrive\Desktop\EncenderPC\EncenderPCAgent\obj\Release\net8.0\win-x64\EncenderPCAgent.csproj.CoreCompileInputs.cache
+C:\Users\remag\OneDrive\Desktop\EncenderPC\EncenderPCAgent\obj\Release\net8.0\win-x64\EncenderPCAgent.sourcelink.json
 C:\Users\remag\OneDrive\Desktop\EncenderPC\EncenderPCAgent\obj\Release\net8.0\win-x64\Encender.6E5EB7D7.Up2Date
 C:\Users\remag\OneDrive\Desktop\EncenderPC\EncenderPCAgent\obj\Release\net8.0\win-x64\EncenderPCAgent.dll
 C:\Users\remag\OneDrive\Desktop\EncenderPC\EncenderPCAgent\obj\Release\net8.0\win-x64\refint\EncenderPCAgent.dll

@@ -1,5 +1,5 @@
 using EncenderPCAgent.Config;
-using EncenderPCAgent.Firebase;
+using EncenderPCAgent.Presence;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -9,32 +9,22 @@ namespace EncenderPCAgent;
 public sealed class Worker : BackgroundService
 {
     private readonly ILogger<Worker> _logger;
-    private readonly FirebaseAuthClient _authClient;
-    private readonly FirestoreHeartbeatClient _heartbeatClient;
+    private readonly PresenceReporter _presence;
     private readonly AgentSettings _agentSettings;
-
-    // Margen de seguridad para renovar el idToken antes de que expire de verdad.
-    private static readonly TimeSpan TokenRefreshMargin = TimeSpan.FromMinutes(5);
-
-    private DeviceCredentials? _credentials;
 
     public Worker(
         ILogger<Worker> logger,
-        FirebaseAuthClient authClient,
-        FirestoreHeartbeatClient heartbeatClient,
+        PresenceReporter presence,
         IOptions<AgentSettings> agentSettings)
     {
         _logger = logger;
-        _authClient = authClient;
-        _heartbeatClient = heartbeatClient;
+        _presence = presence;
         _agentSettings = agentSettings.Value;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _credentials = DeviceCredentialsStore.Load();
-
-        if (_credentials is null || string.IsNullOrEmpty(_credentials.DeviceId))
+        if (!_presence.TryLoadCredentials())
         {
             _logger.LogError(
                 "Esta PC todavía no está emparejada. Corré 'EncenderPCAgent.exe pair' desde una consola " +
@@ -48,9 +38,8 @@ public sealed class Worker : BackgroundService
         {
             try
             {
-                await EnsureFreshTokenAsync(stoppingToken);
-                await _heartbeatClient.SendHeartbeatAsync(_credentials.IdToken, _credentials.DeviceId, "online", stoppingToken);
-                _logger.LogInformation("Heartbeat enviado ({DeviceId}).", _credentials.DeviceId);
+                await _presence.ReportAsync("online", stoppingToken);
+                _logger.LogInformation("Heartbeat enviado.");
             }
             catch (OperationCanceledException)
             {
@@ -76,44 +65,12 @@ public sealed class Worker : BackgroundService
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        // Best-effort: si Windows nos da tiempo (apagado/reinicio normal,
-        // "net stop"), avisamos que la PC se está apagando. Si el corte es
-        // abrupto (falla de energía, crash), esto no llega a ejecutarse y
-        // ahí es la Cloud Function "checkOfflineDevices" la que marca
-        // offline por falta de heartbeat.
-        if (_credentials is not null)
-        {
-            try
-            {
-                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
-                await _heartbeatClient.SendHeartbeatAsync(_credentials.IdToken, _credentials.DeviceId, "offline", cts.Token);
-                _logger.LogInformation("PC marcada como offline antes de detener el servicio.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "No se pudo avisar el apagado a tiempo, quedará offline por timeout igual.");
-            }
-        }
-
+        // Best-effort: cubre apagado/reinicio REALES (o "net stop"), donde
+        // Windows sí nos avisa. El caso de Inicio rápido / suspender /
+        // hibernar (donde esto NUNCA se ejecuta) lo cubre por separado
+        // EncenderPcWindowsService.OnPowerEvent, que llama a
+        // PresenceReporter directamente sin pasar por acá.
+        await _presence.TryReportAsync("offline", TimeSpan.FromSeconds(14), cancellationToken);
         await base.StopAsync(cancellationToken);
-    }
-
-    private async Task EnsureFreshTokenAsync(CancellationToken ct)
-    {
-        if (_credentials is null) return;
-
-        if (DateTimeOffset.UtcNow < _credentials.IdTokenExpiresAtUtc - TokenRefreshMargin)
-        {
-            return; // el token actual todavía sirve
-        }
-
-        var refreshed = await _authClient.RefreshIdTokenAsync(_credentials.RefreshToken, ct);
-
-        _credentials.IdToken = refreshed.IdToken;
-        _credentials.RefreshToken = refreshed.RefreshToken;
-        _credentials.IdTokenExpiresAtUtc = DateTimeOffset.UtcNow.AddSeconds(refreshed.ExpiresInSeconds);
-
-        DeviceCredentialsStore.Save(_credentials);
-        _logger.LogInformation("Token renovado, válido hasta {ExpiresAt} UTC.", _credentials.IdTokenExpiresAtUtc);
     }
 }

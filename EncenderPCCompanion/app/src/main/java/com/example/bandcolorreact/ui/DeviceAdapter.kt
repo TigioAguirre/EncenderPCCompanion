@@ -11,7 +11,8 @@ import java.util.Date
 import java.util.Locale
 
 class DeviceAdapter(
-    private var devices: List<Device> = emptyList()
+    private var devices: List<Device> = emptyList(),
+    private val onDeleteClick: (Device) -> Unit = {}
 ) : RecyclerView.Adapter<DeviceAdapter.DeviceViewHolder>() {
 
     private val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
@@ -37,9 +38,12 @@ class DeviceAdapter(
         private val tvName: TextView = itemView.findViewById(R.id.tvDeviceName)
         private val tvStatus: TextView = itemView.findViewById(R.id.tvDeviceStatus)
         private val dot: android.view.View = itemView.findViewById(R.id.dotStatus)
+        private val btnDelete: android.view.View = itemView.findViewById(R.id.btnDeleteDevice)
 
         fun bind(device: Device) {
             tvName.text = device.name.ifBlank { itemView.context.getString(R.string.devices_unnamed) }
+
+            btnDelete.setOnClickListener { onDeleteClick(device) }
 
             dot.setBackgroundResource(
                 if (device.isOnline) R.drawable.dot_online else R.drawable.dot_offline
