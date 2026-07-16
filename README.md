@@ -1,12 +1,18 @@
 # EncenderPC Companion
 
-![Kotlin](https://img.shields.io/badge/kotlin-100%25-7F52FF?logo=kotlin&logoColor=white)
-![Min SDK](https://img.shields.io/badge/API-26%2B-brightgreen)
 ![License](https://img.shields.io/badge/license-Apache--2.0-blue)
-![Build](https://img.shields.io/github/actions/workflow/status/TigioAguirre/EncenderPCCompanion/build.yml?branch=main&label=build)
 ![Estado](https://img.shields.io/badge/estado-en%20desarrollo%20activo-yellow)
 
-App de Android que escucha el botón de reproducción de música de una Mi Band (u otra pulsera/reloj con control de medios Bluetooth) y, al presionarlo, llama a un webhook (VirtualSmartHome, Home Assistant, IFTTT, etc.) para encender tu PC de forma remota.
+Sistema para encender y monitorear tu PC de forma remota desde una Mi Band (u otra pulsera/reloj con control de medios Bluetooth), con estado en tiempo real desde el celular.
+
+El repo agrupa **tres proyectos independientes** que trabajan juntos:
+
+| Carpeta | Qué es | Stack |
+|---|---|---|
+| [`EncenderPCCompanion/`](EncenderPCCompanion) | App de Android: escucha el botón de la pulsera y muestra el estado de tus PCs | Kotlin |
+| [`EncenderPCAgent/`](EncenderPCAgent) | Servicio de Windows que reporta que la PC está prendida | C# / .NET 8 |
+| [`EncenderPC-BackEnd/`](EncenderPC-BackEnd) | Backend serverless: cuentas, emparejamiento y notificaciones push | Firebase (Cloud Functions + Firestore) |
+| [`Executables/`](Executables) | Builds ya compilados listos para instalar (APKs y el `.exe` del agente) | — |
 
 > **Estado:** proyecto personal / hobby, en desarrollo activo. Las contribuciones y reportes de errores son bienvenidos — ver [CONTRIBUTING.md](CONTRIBUTING.md).
 
@@ -14,117 +20,70 @@ App de Android que escucha el botón de reproducción de música de una Mi Band 
 
 ## Tabla de contenidos
 
-- [¿Cómo funciona?](#cómo-funciona)
-- [Capturas](#capturas)
-- [Requisitos](#requisitos)
-- [Instalación](#instalación)
-- [Compilar y correr](#compilar-y-correr)
-- [Primeros pasos dentro de la app](#primeros-pasos-dentro-de-la-app)
-- [Estructura del proyecto](#estructura-del-proyecto)
+- [¿Cómo funciona el sistema completo?](#cómo-funciona-el-sistema-completo)
+- [Qué hay en cada carpeta](#qué-hay-en-cada-carpeta)
+- [Instalación rápida (sin compilar nada)](#instalación-rápida-sin-compilar-nada)
+- [Levantar el proyecto para desarrollo](#levantar-el-proyecto-para-desarrollo)
 - [Roadmap](#roadmap)
-- [Permisos que pide la app y por qué](#permisos-que-pide-la-app-y-por-qué)
-- [Privacidad](#privacidad)
 - [Licencia](#licencia)
 - [Contribuir](#contribuir)
 
 ---
 
-## ¿Cómo funciona?
+## ¿Cómo funciona el sistema completo?
 
-1. La app registra una sesión de medios (`MediaSession`) "fantasma": un audio silencioso que le hace creer al sistema (y a tu pulsera) que hay música sonando, para que el botón de play/pause de la pulsera tenga un destino al que enviar la pulsación.
-2. Esa sesión **solo se activa si el interruptor principal de la app está encendido** y si ninguna otra app de música real está sonando en ese momento (para no interferir con Spotify, YouTube Music, etc.).
-3. Al presionar play/pause en la pulsera, la app llama al enlace (webhook) que configuraste, y muestra una notificación + un breve destello de color en pantalla como confirmación visual.
+1. **Emparejamiento.** Desde la app Android creás una cuenta y agregás una PC; el backend genera un código de 6 dígitos válido por 10 minutos. Lo tipeás una vez en el agente de Windows, que lo cambia por credenciales limitadas a esa PC puntual.
+2. **Heartbeat.** Mientras Windows está prendido, el agente manda un "estoy vivo" a Firestore cada ~30 segundos.
+3. **Detección de apagado.** Una Cloud Function corre cada minuto y marca offline cualquier PC sin heartbeat reciente (cubre apagados normales, cuelgues y cortes de luz).
+4. **Encendido remoto.** Desde la pulsera, el botón de play/pause de una sesión de medios "fantasma" que crea la app dispara un webhook (Home Assistant, IFTTT, VirtualSmartHome, etc.) que enciende la PC.
+5. **Aviso en el celular.** Apenas la PC vuelve a estar online, el backend manda una notificación push a la app.
 
-## Capturas
+## Qué hay en cada carpeta
 
-| Pantalla principal | Tutorial | Confirmación |
-|---|---|---|
-| _(agregar captura)_ | _(agregar captura)_ | _(agregar captura)_ |
+### `EncenderPCCompanion/` — App Android
+La app que se instala en el celular. Escucha el botón de la pulsera, dispara el webhook de encendido y (con Firebase ya integrado) muestra el estado en vivo de tus PCs. Tiene su propio [README](EncenderPCCompanion/README.md) con la estructura interna del código Kotlin, permisos que pide y cómo compilarla.
 
-> 💡 Reemplazá esta sección con capturas reales o un GIF corto del flujo completo (pulsera → notificación → PC encendida). Es lo primero que ve alguien que llega al repo.
+### `EncenderPCAgent/` — Agente de Windows
+Servicio que corre en la PC a monitorear. Se instala con un doble click (pide permiso de Administrador una sola vez), se empareja con el código de 6 dígitos y desde ahí reporta su estado solo, incluso después de reiniciar Windows. Ver su [README](EncenderPCAgent/README.md) para instrucciones de instalación end-user y de compilación.
 
-## Requisitos
+### `EncenderPC-BackEnd/` — Backend en Firebase
+Todo lo serverless: autenticación de cuentas, registro de PCs en Firestore, generación y validación de los códigos de emparejamiento, la función programada que detecta PCs offline, y el envío de notificaciones push. Ver su [README](EncenderPC-BackEnd/README.md) para el detalle de cada Cloud Function y cómo levantar el emulador local.
 
-- Android Studio Ladybug o más reciente.
-- JDK 17.
-- Un dispositivo o emulador con **Android 8.0 (API 26) o superior**.
-- Un endpoint HTTP que reaccione al botón (por ejemplo un webhook de [Home Assistant](https://www.home-assistant.io/), un applet de [IFTTT](https://ifttt.com/) o [VirtualSmartHome](https://virtualsmarthome.xyz/)).
+### `Executables/`
+Binarios ya compilados para quien no quiera o no pueda compilar desde el código fuente: los `.apk` de la app Android y el `.exe` empaquetado del agente de Windows.
 
-## Instalación
+### Archivos en la raíz
+`LICENSE` (Apache 2.0), `NOTICE` (atribuciones de fuentes/tipografías), `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md` y `SECURITY.md` aplican a los tres proyectos por igual.
 
-La forma más rápida de probar la app sin compilar nada es descargar el APK desde la sección de [**Releases**](https://github.com/TigioAguirre/EncenderPCCompanion/releases):
+## Instalación rápida (sin compilar nada)
 
-1. Descargá el `.apk` de la última release.
-2. Instalalo en tu dispositivo (activando "orígenes desconocidos" si Android lo pide).
-3. Abrí la app y seguí el tutorial inicial.
+1. Descargá el APK más reciente de [`Executables/apk's/`](Executables) e instalalo en tu Android.
+2. Descargá y descomprimí `EncenderPCAgent Executable.zip` de la misma carpeta en la PC que querés monitorear, y abrí `EncenderPCAgent.exe`.
+3. Seguí el tutorial dentro de la app para emparejar la PC con el código de 6 dígitos que te va a mostrar.
 
-> Si preferís compilarlo vos mismo, ver la siguiente sección.
+## Levantar el proyecto para desarrollo
 
-## Compilar y correr
+Cada componente se compila por separado — mirá el README de cada carpeta para el detalle completo:
 
 ```bash
-git clone https://github.com/TigioAguirre/EncenderPCCompanion.git
-cd EncenderPCCompanion
-./gradlew assembleDebug
+# App Android
+cd EncenderPCCompanion && ./gradlew assembleDebug
+
+# Backend (requiere Firebase CLI y una cuenta Blaze)
+cd EncenderPC-BackEnd/functions && npm install && npm run serve
+
+# Agente de Windows (requiere .NET 8 SDK)
+cd EncenderPCAgent && .\build.ps1
 ```
-
-El APK queda en `app/build/outputs/apk/debug/`. También podés abrir la carpeta directamente en Android Studio y correr la configuración `app` sobre un dispositivo conectado.
-
-## Primeros pasos dentro de la app
-
-La primera vez que se abre la app aparece un **tutorial paso a paso** que guía por los 4 permisos que Android exige para que todo funcione (acceso a notificaciones, superposición de pantalla, exención de batería y permiso de notificaciones). Podés volver a verlo en cualquier momento desde el botón de ayuda (`?`) o "Ver el tutorial de nuevo" en la pantalla principal.
-
-## Estructura del proyecto
-
-El código Kotlin está organizado por responsabilidad para que sea fácil ubicar dónde va cada cosa (y agregar features nuevas sin que todo quede en un único paquete):
-
-```
-app/src/main/java/com/example/bandcolorreact/
-├── ui/                     Activities y lógica de pantalla
-│   ├── MainActivity.kt         Pantalla principal (estado + config)
-│   └── TutorialActivity.kt     Tutorial guiado ventana a ventana
-├── service/                Todo lo que corre en segundo plano
-│   ├── MusicButtonListenerService.kt   Escucha notificaciones/medios,
-│   │                                    dispara el webhook
-│   └── BandMediaButtonReceiver.kt      Recibe el evento físico de
-│                                        play/pause de la pulsera
-├── overlay/                 Feedback visual
-│   └── ColorOverlay.kt          Destello de color en pantalla
-└── data/                    Persistencia simple
-    └── AppPrefs.kt               SharedPreferences (switch, URL, etc.)
-
-app/src/main/res/
-├── layout/        Pantallas y filas reutilizables (item_status_row.xml)
-├── drawable/       Íconos vectoriales y fondos (shapes)
-├── font/           Tipografía Manrope (ver NOTICE)
-├── values/         colors.xml, styles.xml, strings.xml, dimens.xml
-└── raw/            Audio silencioso usado por la sesión de medios
-```
-
-> **Nota:** Android **no permite subcarpetas dentro de `res/layout`, `res/drawable`, etc.** — todos los recursos de un mismo tipo deben vivir en la misma carpeta plana, por eso la organización por carpetas solo aplica al código Kotlin (`java/...`). Para los recursos, la convención es usar prefijos en el nombre del archivo (por ejemplo `item_status_row.xml`, `chip_ok.xml`).
 
 ## Roadmap
 
-- [ ] **Detección de si la PC está encendida** — por ejemplo haciendo ping al mismo host del webhook, o escuchando un segundo endpoint. Cuando se implemente, el código de esa lógica va a vivir en un paquete nuevo, por ejemplo `com.example.bandcolorreact.pcstate` (cliente de red + lo necesario para el estado), manteniendo `ui/` únicamente con la presentación.
-- [ ] Publicar releases firmadas con APK descargable en cada versión.
-- [ ] Tests unitarios para `AppPrefs` y la lógica de disparo del webhook.
-- [ ] Integración continua (build + lint en cada PR).
+- [ ] Publicar releases firmadas con changelog en GitHub (hoy los builds viven solo en `Executables/`).
+- [ ] Integración continua: build automático de los tres componentes en cada PR.
+- [ ] Tests unitarios para la lógica de emparejamiento y heartbeat.
+- [ ] Capturas de pantalla y un GIF del flujo completo en este README.
 
 ¿Querés ayudar con alguno de estos puntos? Hay issues abiertos — ver [Issues](https://github.com/TigioAguirre/EncenderPCCompanion/issues).
-
-## Permisos que pide la app y por qué
-
-| Permiso | Para qué se usa |
-|---|---|
-| Acceso a notificaciones (`NotificationListenerService`) | Saber si otra app de música está sonando, para no interferir |
-| Superponerse a otras apps (`SYSTEM_ALERT_WINDOW`) | Mostrar el destello de color de confirmación |
-| Exención de optimización de batería | Que Android no mate el servicio en segundo plano |
-| Notificaciones (`POST_NOTIFICATIONS`, Android 13+) | Mostrar el aviso de "PC encendida" |
-| Internet | Llamar al webhook configurado |
-
-## Privacidad
-
-La app **no** recolecta ni envía datos a ningún servidor propio: el único tráfico de red que genera es la llamada HTTP al enlace que vos configuraste.
 
 ## Licencia
 
