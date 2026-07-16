@@ -59,29 +59,36 @@ Requisitos:
 
 ### Configurar Firebase antes de compilar
 
-Abrí `appsettings.json` y completá `ApiKey` con el **Web API Key** de tu
-proyecto Firebase:
+Por defecto, `appsettings.json` ya viene apuntando al proyecto de
+Firebase del autor (`encenderpc-companion`) — si solo querés compilar el
+agente para usar con la app tal cual la publica el autor, no necesitás
+tocar nada acá y podés ir directo a ["Generar el .exe"](#generar-el-exe).
 
-1. [Firebase Console](https://console.firebase.google.com/) → tu proyecto
-   (`encenderpc-companion`) → ⚙️ Configuración del proyecto → pestaña
-   "General".
+Si en cambio vas a usar **tu propio proyecto de Firebase** (por ejemplo
+porque estás siguiendo la guía de
+[self-hosting](../EncenderPC-BackEnd/SELF_HOSTING.md)), completá
+`ApiKey` con el **Web API Key** de tu proyecto:
+
+1. [Firebase Console](https://console.firebase.google.com/) → tu
+   proyecto → ⚙️ Configuración del proyecto → pestaña "General".
 2. Si no tenés ninguna app Web todavía, hacé click en el ícono `</>` para
    agregar una (no hace falta que hagas nada con el hosting, solo
    registrarla) — eso te va a mostrar un bloque `firebaseConfig` con
    `apiKey: "..."`.
-3. Pegá ese valor en `appsettings.json`:
+3. Pegá ese valor en `appsettings.json`, junto con tu `ProjectId` y la
+   región donde desplegaste las Cloud Functions:
 
 ```json
 "Firebase": {
-  "ProjectId": "encenderpc-companion",
+  "ProjectId": "tu-proyecto-id",
   "ApiKey": "AIza....................",
   "FunctionsRegion": "us-central1"
 }
 ```
 
 > Este ApiKey **no es secreto** — identifica el proyecto, no da permisos
-> por sí solo. Lo que protege tus datos son las `firestore.rules` que ya
-> desplegamos.
+> por sí solo. Lo que protege los datos son las `firestore.rules`
+> desplegadas en ese proyecto (ver [`EncenderPC-BackEnd/`](../EncenderPC-BackEnd)).
 
 ### Generar el .exe
 
@@ -143,3 +150,12 @@ Installer/
 build.ps1                  Compila el .exe self-contained a repartir (uso del desarrollador)
 uninstall.ps1              Atajo para "EncenderPCAgent.exe uninstall" + borrar credenciales
 ```
+
+## Ver también
+
+- [`EncenderPC-BackEnd/`](../EncenderPC-BackEnd) — Cloud Functions
+  `pairDevice`/`createDevice` y reglas de Firestore que consume este
+  agente.
+- [`EncenderPC-BackEnd/SELF_HOSTING.md`](../EncenderPC-BackEnd/SELF_HOSTING.md)
+  — guía completa para levantar todo (backend + app + agente) contra tu
+  propio proyecto de Firebase.
