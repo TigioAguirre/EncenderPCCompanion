@@ -3,6 +3,7 @@ using EncenderPCAgent.Presence;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Net.NetworkInformation;
 
 namespace EncenderPCAgent;
 
@@ -11,6 +12,18 @@ public sealed class Worker : BackgroundService
     private readonly ILogger<Worker> _logger;
     private readonly PresenceReporter _presence;
     private readonly AgentSettings _agentSettings;
+
+    // Se "avisa" (TrySetResult) desde OnNetworkAvailabilityChanged para
+    // cortar la espera del loop antes de tiempo. Ver comentario en
+    // ExecuteAsync: existe para el arranque en frío (sin Inicio rápido),
+    // donde el servicio puede arrancar (ahora con start=auto, ver
+    // ServiceInstaller) una fracción de segundo antes de que el adaptador
+    // de red tenga IP/ruta real, aunque el servicio Tcpip ya figure
+    // "Running". Sin esto, ese primer heartbeat fallido recién se
+    // reintentaría en el próximo ciclo (hasta 30s); con esto, se reintenta
+    // apenas Windows avisa que la red volvió a estar disponible.
+    private TaskCompletionSource<bool>? _wake;
+    private readonly object _wakeLock = new();
 
     public Worker(
         ILogger<Worker> logger,
@@ -34,32 +47,100 @@ public sealed class Worker : BackgroundService
 
         var interval = TimeSpan.FromSeconds(Math.Max(10, _agentSettings.HeartbeatIntervalSeconds));
 
-        while (!stoppingToken.IsCancellationRequested)
+        NetworkChange.NetworkAvailabilityChanged += OnNetworkAvailabilityChanged;
+        NetworkChange.NetworkAddressChanged += OnNetworkAddressChanged;
+        try
         {
-            try
+            while (!stoppingToken.IsCancellationRequested)
             {
-                await _presence.ReportAsync("online", stoppingToken);
-                _logger.LogInformation("Heartbeat enviado.");
-            }
-            catch (OperationCanceledException)
-            {
-                // El servicio se está deteniendo, no es un error real.
-            }
-            catch (Exception ex)
-            {
-                // No tiramos el servicio abajo por un heartbeat fallido puntual
-                // (ej. corte de internet): reintentamos en el próximo ciclo.
-                _logger.LogWarning(ex, "No se pudo mandar el heartbeat, se reintenta en {Interval}.", interval);
-            }
+                var reportOk = true;
+                try
+                {
+                    await _presence.ReportAsync("online", stoppingToken);
+                    _logger.LogInformation("Heartbeat enviado.");
+                }
+                catch (OperationCanceledException)
+                {
+                    // El servicio se está deteniendo, no es un error real.
+                }
+                catch (Exception ex)
+                {
+                    reportOk = false;
+                    // No tiramos el servicio abajo por un heartbeat fallido puntual
+                    // (ej. corte de internet): reintentamos en el próximo ciclo,
+                    // o antes si Windows avisa que la red volvió (ver Wait...).
+                    _logger.LogWarning(ex, "No se pudo mandar el heartbeat, se reintenta en {Interval} (o antes, si vuelve la red).", interval);
+                }
 
-            try
-            {
-                await Task.Delay(interval, stoppingToken);
+                try
+                {
+                    // Si el heartbeat falló, esperamos como máximo `interval`,
+                    // pero cortamos antes si llega un aviso de red disponible.
+                    // Si salió bien, esperamos el intervalo normal sin más.
+                    if (reportOk)
+                    {
+                        await Task.Delay(interval, stoppingToken);
+                    }
+                    else
+                    {
+                        await WaitForIntervalOrNetworkAsync(interval, stoppingToken);
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
             }
-            catch (OperationCanceledException)
+        }
+        finally
+        {
+            NetworkChange.NetworkAvailabilityChanged -= OnNetworkAvailabilityChanged;
+            NetworkChange.NetworkAddressChanged -= OnNetworkAddressChanged;
+        }
+    }
+
+    private async Task WaitForIntervalOrNetworkAsync(TimeSpan interval, CancellationToken stoppingToken)
+    {
+        var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        lock (_wakeLock)
+        {
+            _wake = tcs;
+        }
+
+        try
+        {
+            var delayTask = Task.Delay(interval, stoppingToken);
+            await Task.WhenAny(delayTask, tcs.Task);
+        }
+        finally
+        {
+            lock (_wakeLock)
             {
-                break;
+                if (ReferenceEquals(_wake, tcs))
+                {
+                    _wake = null;
+                }
             }
+        }
+
+        stoppingToken.ThrowIfCancellationRequested();
+    }
+
+    private void OnNetworkAvailabilityChanged(object? sender, NetworkAvailabilityEventArgs e)
+    {
+        if (e.IsAvailable)
+        {
+            Wake();
+        }
+    }
+
+    private void OnNetworkAddressChanged(object? sender, EventArgs e) => Wake();
+
+    private void Wake()
+    {
+        lock (_wakeLock)
+        {
+            _wake?.TrySetResult(true);
         }
     }
 

@@ -2696,11 +2696,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\remag\\OneDrive\\Desktop\\EncenderPC\\EncenderPCAgent\\EncenderPCAgent.csproj",
+      "projectUniqueName": "C:\\Users\\remag\\OneDrive\\Desktop\\EncenderPCCompanion-main\\EncenderPCAgent\\EncenderPCAgent.csproj",
       "projectName": "EncenderPCAgent",
-      "projectPath": "C:\\Users\\remag\\OneDrive\\Desktop\\EncenderPC\\EncenderPCAgent\\EncenderPCAgent.csproj",
+      "projectPath": "C:\\Users\\remag\\OneDrive\\Desktop\\EncenderPCCompanion-main\\EncenderPCAgent\\EncenderPCAgent.csproj",
       "packagesPath": "C:\\Users\\remag\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\remag\\OneDrive\\Desktop\\EncenderPC\\EncenderPCAgent\\obj\\",
+      "outputPath": "C:\\Users\\remag\\OneDrive\\Desktop\\EncenderPCCompanion-main\\EncenderPCAgent\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\remag\\AppData\\Roaming\\NuGet\\NuGet.Config"

@@ -1,0 +1,4 @@
+C:\Users\remag\OneDrive\Desktop\EncenderPCCompanion-main\EncenderPCAgent\publish\appsettings.json
+C:\Users\remag\OneDrive\Desktop\EncenderPCCompanion-main\EncenderPCAgent\publish\publish\appsettings.json
+C:\Users\remag\OneDrive\Desktop\EncenderPCCompanion-main\EncenderPCAgent\publish\EncenderPCAgent.pdb
+C:\Users\remag\OneDrive\Desktop\EncenderPCCompanion-main\EncenderPCAgent\publish\EncenderPCAgent.exe

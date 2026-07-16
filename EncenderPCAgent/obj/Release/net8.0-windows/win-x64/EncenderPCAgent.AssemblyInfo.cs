@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EncenderPCAgent")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bb62c5c419ba020d94af0a740f4f81762bc9e93d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
 [assembly: System.Reflection.AssemblyProductAttribute("EncenderPCAgent")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EncenderPCAgent")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

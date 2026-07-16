@@ -87,16 +87,43 @@ public static class ServiceInstaller
             Thread.Sleep(1000);
         }
 
-        // FIX 1: "delayed-auto" (antes decía "auto" en el comentario pero el
-        // código seguía usando "auto" a secas: nunca se aplicó). Con
-        // delayed-auto el servicio arranca unos minutos después del
-        // arranque de Windows, cuando ya no compite por CPU/disco con todo
-        // lo demás que arranca junto con el sistema — esto reduce bastante
-        // las veces que el arranque tarda tanto que dispara el Error 1053.
+        // FIX 1 (histórico, REVERTIDO): se había puesto "delayed-auto" para
+        // reducir el Error 1053 en arranques muy cargados de CPU/disco.
+        //
+        // BUG ENCONTRADO: "delayed-auto" NO es "arranca un ratito después".
+        // Windows recién dispara el temporizador de inicio retrasado cuando
+        // considera terminado el arranque del sistema (los servicios
+        // "Automatic" normales ya están corriendo), y encima corre en un
+        // hilo de fondo de PRIORIDAD BAJA que cede ante cualquier otra cosa
+        // que esté usando CPU/disco. En una PC con arranque en frío real
+        // (Inicio rápido desactivado), eso empuja el arranque del servicio
+        // minutos hacia adelante — en la práctica, hasta después de que el
+        // usuario ya inició sesión (perfil, apps de inicio, antivirus, etc.
+        // compitiendo justo en ese momento). Por eso el aviso de "online"
+        // parecía depender de loguearse, cuando en realidad dependía de esta
+        // política de arranque.
+        //
+        // En una PC CON Inicio rápido, "Apagar" en realidad hiberna la
+        // sesión 0 (donde viven los servicios) en vez de apagarla de
+        // verdad: al prender, Windows resume ese estado ya hibernado, así
+        // que el servicio (delayed-auto o no) ya estaba "corriendo" desde
+        // antes del hibernado — por eso ahí sí se veía instantáneo (además,
+        // EncenderPcWindowsService.OnPowerEvent(ResumeSuspend/...) manda
+        // "online" apenas se resume, sin esperar al próximo heartbeat).
+        //
+        // El riesgo original de Error 1053 que "delayed-auto" buscaba
+        // evitar ya está cubierto por otro lado: el ServicesPipeTimeout de
+        // 60s (FIX 4, más abajo) le da al proceso de sobra para
+        // auto-extraerse y pasar el escaneo del antivirus en el primer
+        // arranque, sin necesidad de retrasar CUÁNDO arranca. Con "auto" a
+        // secas el servicio arranca apenas termina el grupo de servicios
+        // normales del sistema (mucho antes de la pantalla de login), y la
+        // dependencia de Tcpip (FIX 2) sigue asegurando que no arranque
+        // antes de que el stack de red esté cargado.
         var create = RunSc(
             "create", ServiceName,
             "binPath=", exePath,
-            "start=", "delayed-auto",
+            "start=", "auto",
             "DisplayName=", DisplayName);
 
         if (create.ExitCode != 0)
@@ -190,7 +217,7 @@ public static class ServiceInstaller
             // Windows; no es motivo para cortar la instalación.
         }
 
-        message = "Servicio registrado correctamente (con inicio retrasado y espera de red).";
+        message = "Servicio registrado correctamente (inicio automático normal, con espera de red).";
         return true;
     }
 
