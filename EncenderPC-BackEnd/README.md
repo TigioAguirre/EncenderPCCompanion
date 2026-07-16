@@ -27,8 +27,9 @@ notificaciones push del proyecto EncenderPCCompanion.
 5. `checkOfflineDevices` (corre cada 1 min) pasa a `offline`
    cualquier PC cuyo `lastSeen` tenga más de 90s — cubre apagados,
    crashes o cortes de red.
-6. `onDeviceStatusChange` detecta el flanco `offline → online` y le
-   manda una push (FCM) al dueño: *"Tu PC se encendió"*.
+6. `onDeviceStatusChange` detecta el flanco `offline → online` (o al
+   revés) y le manda una push (FCM) al dueño: *"Tu PC se encendió"* /
+   *"Tu PC se apagó"*.
 7. La app Android muestra el estado en tiempo real con un listener de
    Firestore sobre `devices` (no hace falta polling manual).
 
@@ -49,6 +50,14 @@ cd functions
 npm install
 cd ..
 ```
+
+> ¿Vas a usar **tu propio** proyecto de Firebase en vez del que ya
+> tiene desplegado el autor (por ejemplo porque no querés depender de
+> los `.apk`/`.exe` de [`Executables/`](../Executables))? Los pasos de
+> arriba conectan el backend, pero la app Android y el agente de
+> Windows también apuntan a un proyecto puntual — la guía completa,
+> con los tres archivos que hay que tocar y en qué orden, está en
+> **[SELF_HOSTING.md](SELF_HOSTING.md)**.
 
 ## Emulador local (para probar sin gastar cuota real)
 
@@ -75,23 +84,27 @@ firestore.rules            Reglas de seguridad (quién puede leer/escribir qué)
 firestore.indexes.json     Índice compuesto para la query de "PCs sin heartbeat"
 functions/
   src/
-    admin.ts                Init de firebase-admin + constantes (umbral offline)
-    pairing.ts               createDevice, pairDevice
-    presence.ts               checkOfflineDevices, onDeviceStatusChange
-    users.ts                   onUserCreate, registerFcmToken
-    index.ts                    Exporta todo
+    admin.ts               Init de firebase-admin + constantes (umbral offline)
+    pairing.ts              createDevice, pairDevice
+    presence.ts              checkOfflineDevices, onDeviceStatusChange
+    users.ts                 registerFcmToken
+    index.ts                 Exporta todo
 ```
 
-## Próximos pasos (fuera de este backend)
+## Cómo se conectan los otros dos proyectos
 
-- **Agente de Windows** (.NET 8 Worker Service): intercambia el
-  `customToken` por credenciales reales via
-  `POST https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken`,
-  y después hace `PATCH` a la REST API de Firestore
-  (`https://firestore.googleapis.com/v1/projects/{project}/databases/(default)/documents/devices/{deviceId}`)
-  cada 30s con el `idToken` como `Authorization: Bearer`.
-- **App Android**: agregar Firebase Auth, el SDK de Firestore
-  (listener en `devices` filtrado por `ownerUid`), el SDK de FCM, y
-  las pantallas de login / "Mis PCs" / "Agregar PC".
+Este backend no vive aislado — el agente de Windows y la app Android ya
+lo consumen:
 
-Pedime cualquiera de las dos y seguimos con el código.
+- **Agente de Windows** (`EncenderPCAgent/`, .NET 8 Worker Service):
+  intercambia el `customToken` de `pairDevice` por credenciales reales
+  vía `POST .../accounts:signInWithCustomToken`, y después hace `PATCH`
+  a la REST API de Firestore cada 30s con el `idToken` como
+  `Authorization: Bearer`. Ver su [README](../EncenderPCAgent/README.md).
+- **App Android** (`EncenderPCCompanion/`): usa Firebase Auth, el SDK
+  de Firestore (listener en `devices` filtrado por `ownerUid`) y el SDK
+  de FCM para las pantallas de login, "Mis PCs" y "Agregar PC". Ver su
+  [README](../EncenderPCCompanion/README.md).
+
+¿Encontraste un bug en alguna de las Cloud Functions o querés proponer
+una mejora? Ver [CONTRIBUTING.md](../CONTRIBUTING.md).
