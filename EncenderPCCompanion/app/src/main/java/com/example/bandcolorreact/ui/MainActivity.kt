@@ -22,6 +22,7 @@ import androidx.appcompat.widget.SwitchCompat
 import com.example.bandcolorreact.R
 import com.example.bandcolorreact.auth.SessionManager
 import com.example.bandcolorreact.data.AppPrefs
+import com.example.bandcolorreact.data.WebhookTrigger
 
 class MainActivity : AppCompatActivity() {
 
@@ -110,6 +111,17 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
         }
 
+        // Acción directa e independiente del interruptor y de la pulsera:
+        // prende la PC ya mismo llamando al webhook guardado. No pasa por
+        // MusicButtonListenerService ni requiere el permiso de escucha de
+        // notificaciones ni el reproductor fantasma; es solo la app
+        // llamando al mismo enlace HTTP que llamaría la pulsera.
+        findViewById<Button>(R.id.btnTestWebhookNow).setOnClickListener { encenderPcNow() }
+
+        findViewById<Button>(R.id.btnWebhookGuideLink).setOnClickListener {
+            startActivity(Intent(this, WebhookGuideActivity::class.java))
+        }
+
         findViewById<ImageButton>(R.id.btnPcCompanion).setOnClickListener {
             val destination = if (SessionManager().isLoggedIn) {
                 DevicesActivity::class.java
@@ -171,6 +183,33 @@ class MainActivity : AppCompatActivity() {
 
     private fun isValidUrl(url: String): Boolean =
         url.startsWith("http://") || url.startsWith("https://")
+
+    /**
+     * Prende la PC ya mismo: dispara el webhook guardado sin pasar por el
+     * interruptor maestro ni por el flujo de la pulsera (notificaciones,
+     * reproductor fantasma, etc.). Es la vía directa desde la app misma,
+     * pensada para cuando quieres encenderla sin depender de la Mi Band.
+     */
+    private fun encenderPcNow() {
+        val url = AppPrefs.getTriggerUrl(this).trim()
+        if (url.isEmpty() || !isValidUrl(url)) {
+            Toast.makeText(this, getString(R.string.toast_test_webhook_missing_url), Toast.LENGTH_LONG).show()
+            return
+        }
+        val button = findViewById<Button>(R.id.btnTestWebhookNow)
+        button.isEnabled = false
+        button.text = getString(R.string.btn_test_webhook_loading)
+        WebhookTrigger.trigger(url) { result ->
+            button.isEnabled = true
+            button.text = getString(R.string.btn_test_webhook_now)
+            when (result) {
+                is WebhookTrigger.Result.Success ->
+                    Toast.makeText(this, getString(R.string.toast_test_webhook_success), Toast.LENGTH_LONG).show()
+                is WebhookTrigger.Result.Failure ->
+                    Toast.makeText(this, getString(R.string.toast_test_webhook_failure, result.message), Toast.LENGTH_LONG).show()
+            }
+        }
+    }
 
     private fun saveTriggerUrl() {
         val url = editTriggerUrl.text.toString().trim()

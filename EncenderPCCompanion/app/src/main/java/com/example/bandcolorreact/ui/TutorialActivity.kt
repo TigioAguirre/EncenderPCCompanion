@@ -65,6 +65,7 @@ class TutorialActivity : AppCompatActivity() {
     private lateinit var textStepStatus: TextView
     private lateinit var editStepUrl: EditText
     private lateinit var textStepUrlError: TextView
+    private lateinit var btnStepWebhookGuide: Button
     private lateinit var btnStepAction: Button
     private lateinit var btnStepBack: Button
     private lateinit var btnStepSkip: Button
@@ -93,9 +94,14 @@ class TutorialActivity : AppCompatActivity() {
         textStepStatus = findViewById(R.id.textStepStatus)
         editStepUrl = findViewById(R.id.editStepUrl)
         textStepUrlError = findViewById(R.id.textStepUrlError)
+        btnStepWebhookGuide = findViewById(R.id.btnStepWebhookGuide)
         btnStepAction = findViewById(R.id.btnStepAction)
         btnStepBack = findViewById(R.id.btnStepBack)
         btnStepSkip = findViewById(R.id.btnStepSkip)
+
+        btnStepWebhookGuide.setOnClickListener {
+            startActivity(Intent(this, WebhookGuideActivity::class.java))
+        }
 
         buildDots()
 
@@ -165,6 +171,7 @@ class TutorialActivity : AppCompatActivity() {
         chipStepStatus.visibility = View.GONE
         editStepUrl.visibility = View.GONE
         textStepUrlError.visibility = View.GONE
+        btnStepWebhookGuide.visibility = View.GONE
         btnStepBack.visibility = if (currentStep == 0) View.INVISIBLE else View.VISIBLE
         btnStepSkip.visibility = if (step.type == StepType.DONE) View.INVISIBLE else View.VISIBLE
 
@@ -209,6 +216,7 @@ class TutorialActivity : AppCompatActivity() {
 
             StepType.URL_INPUT -> {
                 editStepUrl.visibility = View.VISIBLE
+                btnStepWebhookGuide.visibility = View.VISIBLE
                 editStepUrl.setText(AppPrefs.getTriggerUrl(this))
                 btnStepAction.text = getString(R.string.tutorial_next)
                 btnStepAction.setOnClickListener {

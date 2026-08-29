@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <com.example.bandcolorreact.ui.widget.ZoomableImageView
+        android:id="@+id/imageViewerFull"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@null" />
+
+    <ImageButton
+        android:id="@+id/btnImageViewerClose"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="@dimen/space_md"
+        android:background="@drawable/bg_card_outlined"
+        android:src="@drawable/ic_close"
+        android:padding="10dp"
+        android:contentDescription="@string/content_desc_close_viewer" />
+
+</FrameLayout>

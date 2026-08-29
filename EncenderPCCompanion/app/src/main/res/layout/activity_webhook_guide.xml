@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/bg_app">
+
+    <!-- Cabecera con progreso, igual criterio que el tutorial principal -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_header"
+        android:paddingHorizontal="@dimen/space_lg"
+        android:paddingTop="@dimen/space_lg"
+        android:paddingBottom="@dimen/space_lg">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/webhook_guide_title"
+            android:textColor="@color/text_on_dark_secondary"
+            android:textSize="12sp"
+            android:fontFamily="@font/manrope_bold"
+            android:letterSpacing="0.06" />
+
+        <TextView
+            android:id="@+id/textGuideStepProgress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="@string/webhook_guide_step_of"
+            android:textColor="@color/text_on_dark_secondary"
+            android:textSize="12sp"
+            android:fontFamily="@font/manrope_bold"
+            android:letterSpacing="0.06" />
+
+        <LinearLayout
+            android:id="@+id/dotsGuideContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/space_sm" />
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/space_lg">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:padding="@dimen/space_lg">
+
+                <ImageView
+                    android:id="@+id/imageGuideStepIcon"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_marginBottom="@dimen/space_md"
+                    android:src="@drawable/ic_large_encenderpc"
+                    android:contentDescription="@null" />
+
+                <TextView
+                    android:id="@+id/textGuideStepTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="19sp"
+                    android:fontFamily="@font/manrope_bold"
+                    android:textColor="@color/text_primary"
+                    tools:text="Título del paso" />
+
+                <TextView
+                    android:id="@+id/textGuideStepDesc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_sm"
+                    style="@style/Text.Body"
+                    android:textColor="@color/text_secondary" />
+
+                <!-- Botón secundario opcional: abre la app/sitio relevante
+                     para ese paso (Alexa, VirtualSmartHome, etc.). Se
+                     oculta con visibility=gone cuando el paso no trae
+                     acción externa (ver GuideStep.actionLabelRes). -->
+                <Button
+                    android:id="@+id/btnGuideStepExternalAction"
+                    style="@style/Button.Secondary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_md"
+                    android:visibility="gone"
+                    tools:text="Abrir Alexa" />
+
+                <!-- Espacio reservado para la captura de pantalla de este
+                     paso. Se deja vacío a propósito: cada Step puede traer
+                     un imageRes propio y, si no lo trae, se muestra este
+                     placeholder punteado para que el autor sepa dónde
+                     agregar la imagen más adelante. -->
+                <FrameLayout
+                    android:id="@+id/frameGuideStepImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="260dp"
+                    android:layout_marginTop="@dimen/space_md"
+                    android:background="@drawable/bg_image_placeholder">
+
+                    <!-- Carrusel horizontal: se llena en tiempo de
+                         ejecución con una miniatura por cada imagen del
+                         paso actual (ver GuideStep.imageRes, ahora una
+                         lista). Cada miniatura conserva su propia relación
+                         de aspecto (adjustViewBounds) y, al tocarla, abre
+                         ImageViewerActivity para verla a tamaño real. -->
+                    <HorizontalScrollView
+                        android:id="@+id/carouselGuideStepImages"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="gone"
+                        android:scrollbars="none"
+                        android:clipToPadding="false"
+                        android:paddingHorizontal="@dimen/space_sm">
+
+                        <LinearLayout
+                            android:id="@+id/layoutGuideStepImagesContainer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical" />
+                    </HorizontalScrollView>
+
+                    <LinearLayout
+                        android:id="@+id/layoutGuideStepImagePlaceholder"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:src="@drawable/ic_image_placeholder"
+                            android:contentDescription="@null" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:gravity="center"
+                            android:text="@string/webhook_guide_image_placeholder"
+                            style="@style/Text.Caption"
+                            android:textColor="@color/text_on_dark_secondary" />
+                    </LinearLayout>
+
+                </FrameLayout>
+
+                <!-- Pista de affordance: aclara que las miniaturas de arriba
+                     se pueden tocar para verlas más grandes (con zoom) en
+                     ImageViewerActivity. Se muestra/oculta junto con el
+                     carrusel desde renderImageSlot(). -->
+                <TextView
+                    android:id="@+id/textGuideStepImageHint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    android:text="@string/webhook_guide_image_hint"
+                    android:drawableStart="@drawable/ic_zoom_hint"
+                    android:drawablePadding="4dp"
+                    style="@style/Text.Caption"
+                    android:textColor="@color/text_on_dark_secondary"
+                    tools:visibility="visible" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Botón principal: avanza el paso actual ("Empezar" / "Siguiente" /
+         "Guardar y volver" según el paso). Es la única acción obligatoria
+         de cada pantalla, por eso va aparte y a todo el ancho, arriba de
+         las acciones secundarias (Atrás / Cerrar). -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/space_lg"
+        android:paddingTop="@dimen/space_sm">
+
+        <Button
+            android:id="@+id/btnGuideStepAction"
+            style="@style/Button.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Siguiente" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/space_lg"
+        android:paddingVertical="@dimen/space_md">
+
+        <Button
+            android:id="@+id/btnGuideStepBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/wg_back"
+            style="@style/Button.Text" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btnGuideStepSkip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/wg_skip"
+            style="@style/Button.Text" />
+    </LinearLayout>
+
+</LinearLayout>

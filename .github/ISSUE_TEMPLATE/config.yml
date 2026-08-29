@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: "\U0001F4AC Preguntas y dudas generales"
+    url: https://github.com/OWNER/EncenderPCCompanion/discussions
+    about: Para preguntas de uso o configuración, usá las Discussions en vez de un issue.

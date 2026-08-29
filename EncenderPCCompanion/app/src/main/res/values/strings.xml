@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">EncenderPC companion</string>
+    <string name="content_desc_close_viewer">Cerrar visor de imagen</string>
 
     <string name="title_main">EncenderPC companion</string>
     <string name="content_desc_help">Ver ayuda / volver a ver el tutorial</string>
@@ -20,10 +21,22 @@
     <string name="toast_url_saved">Enlace guardado</string>
     <string name="toast_url_invalid">Ese enlace no parece válido. Debe empezar con http:// o https://</string>
     <string name="toast_url_empty">Puedes dejarlo vacío, pero entonces no se encenderá nada al presionar el botón</string>
+    <string name="btn_webhook_guide_link">¿Cómo obtener mi webhook?</string>
 
     <string name="switch_service_enabled">Activar EncenderPC companion</string>
     <string name="switch_subtitle_on">Activado: el botón de la pulsera encenderá la PC</string>
     <string name="switch_subtitle_off">Desactivado: el botón de la pulsera no hará nada</string>
+
+    <!-- Botón de acción directa: prende la PC ya mismo llamando al webhook
+         guardado, sin pasar por la pulsera ni por el servicio de escucha
+         de notificaciones/reproductor fantasma. Funciona esté o no
+         activado el interruptor de arriba. -->
+    <string name="btn_test_webhook_now">⚡ Prender PC ahora</string>
+    <string name="btn_test_webhook_loading">Prendiendo…</string>
+    <string name="test_webhook_subtitle">Enciende tu PC en este momento, directo desde la app, sin necesidad de tocar el botón de tu pulsera ni de tener activa la escucha de notificaciones.</string>
+    <string name="toast_test_webhook_missing_url">Primero guarda un enlace válido para poder prender la PC</string>
+    <string name="toast_test_webhook_success">PC encendida ✓</string>
+    <string name="toast_test_webhook_failure">No se pudo prender la PC: %1$s</string>
 
     <string name="toast_service_enabled">EncenderPC companion activado</string>
     <string name="toast_service_disabled">EncenderPC companion desactivado</string>
@@ -63,6 +76,7 @@
     <string name="tutorial_notifications_runtime_desc">Para mostrarte la confirmación visual en tu teléfono y reloj cuando se encienda la PC.</string>
     <string name="tutorial_url_title">Tu enlace de encendido</string>
     <string name="tutorial_url_desc">Pega el Webhook (VirtualSmartHome, Home Assistant, etc.) que ejecutará la acción.</string>
+    <string name="tutorial_webhook_guide_link">¿Cómo obtener mi webhook?</string>
     <string name="tutorial_done_title">¡Todo listo!</string>
     <string name="tutorial_done_desc">Ya puedes encender tu PC tocando el botón de Play en el widget de música de tu pulsera.</string>
 
@@ -76,4 +90,41 @@
     <string name="error_url_invalid">El enlace debe comenzar con http:// o https://</string>
     <string name="tutorial_back">Atrás</string>
     <string name="tutorial_skip">Omitir</string>
+
+    <!-- ============================================================ -->
+    <!-- Guía "¿Cómo obtener mi webhook?" (Alexa + VirtualSmartHome)   -->
+    <!-- ============================================================ -->
+    <string name="webhook_guide_title">Obtener mi webhook</string>
+    <string name="webhook_guide_step_of">Paso %1$d de %2$d</string>
+    <string name="webhook_guide_image_placeholder">Espacio para tu captura de pantalla de este paso</string>
+    <string name="webhook_guide_image_hint">Toca una imagen para verla más grande</string>
+    <string name="webhook_guide_image_zoom_cd">Toca para ver esta captura más grande</string>
+
+    <string name="wg_intro_title">¿Qué vamos a hacer?</string>
+    <string name="wg_intro_desc">Vamos a crear un enlace (webhook) gratis usando Alexa y el servicio VirtualSmartHome. Cuando la app llame a ese enlace, Alexa se enterará y podrá encender tu PC (por ejemplo a través de un enchufe inteligente o un relé conectado al botón de encendido). Si ya usas Home Assistant o IFTTT, también sirve: solo necesitas el enlace final. Sigue los pasos, tómate tu tiempo y vuelve aquí cuando tengas cada cosa lista.</string>
+    <string name="wg_intro_action">Empezar</string>
+
+    <string name="wg_account_title">1. Crea tu cuenta en VirtualSmartHome</string>
+    <string name="wg_account_desc">Abre virtualsmarthome.xyz desde tu teléfono o computadora y crea una cuenta gratuita (con tu correo o con Google). La usarás para generar el enlace y para vincularla luego con Alexa.</string>
+    <string name="wg_account_action">Abrir VirtualSmartHome</string>
+
+    <string name="wg_skill_title">1. Habilita la skill en Alexa</string>
+    <string name="wg_skill_desc">Abre la app de Alexa → Más (⋯) → Skills y Juegos → busca "Virtual Smart Home" → Habilitar para usar. </string>
+    <string name="wg_skill_action">Ir a la Skill necesaria</string>
+
+    <string name="wg_device_title">2. Crea tu dispositivo virtual</string>
+    <string name="wg_device_desc">Abre la pagina de URL Routine Trigger, conectate con tu cuenta de alexa. Busca el Panel de "Create a new URL Routine Trigger" → dale un nombre fácil de reconocer, por ejemplo "Encender PC".</string>
+    <string name="wg_device_action">Registra tu dispositivo</string>
+
+    <string name="wg_routine_title">3. Descubre el dispositivo y crea la rutina</string>
+    <string name="wg_routine_desc">Vuelve a la app de Alexa y di "Alexa, descubre dispositivos" (o hazlo manualmente desde Dispositivos → Descubrir) para que aparezca el que acabas de crear. Luego ve a Más → Rutinas → el ícono "+" → agrega como disparador ese dispositivo (cuando se encienda) y como acción la que realmente prenda tu PC: un enchufe inteligente conectado al botón de encendido, un relé, u otra automatización que ya tengas. Esta parte depende de tu propio montaje físico.</string>
+    <string name="wg_routine_action">Abrir Rutinas de Alexa</string>
+
+    <string name="wg_done_title">¡Listo, ya tienes tu webhook!</string>
+    <string name="wg_done_desc">Guardamos este enlace como el que se usará al presionar el botón de tu pulsera. Puedes cambiarlo cuando quieras desde la pantalla principal.</string>
+    <string name="wg_done_action">Guardar y volver</string>
+
+    <string name="wg_next">Siguiente</string>
+    <string name="wg_back">Atrás</string>
+    <string name="wg_skip">Cerrar</string>
 </resources>

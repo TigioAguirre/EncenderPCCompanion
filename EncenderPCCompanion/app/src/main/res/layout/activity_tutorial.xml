@@ -131,6 +131,18 @@
                     android:fontFamily="@font/manrope_semibold"
                     android:visibility="gone" />
 
+                <!-- Solo visible en el paso de la URL: lleva a la guía
+                     completa de cómo generar el webhook con Alexa -->
+                <Button
+                    android:id="@+id/btnStepWebhookGuide"
+                    style="@style/Button.Text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginStart="-12dp"
+                    android:text="@string/tutorial_webhook_guide_link"
+                    android:visibility="gone" />
+
             </LinearLayout>
 
             <Button

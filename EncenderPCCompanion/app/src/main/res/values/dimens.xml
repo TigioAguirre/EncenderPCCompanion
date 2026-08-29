@@ -5,4 +5,8 @@
     <dimen name="space_md">16dp</dimen>
     <dimen name="space_lg">24dp</dimen>
     <dimen name="icon_status_size">20dp</dimen>
+
+    <!-- Miniaturas de la guía del webhook (carrusel de capturas) -->
+    <dimen name="thumb_corner_radius">14dp</dimen>
+    <dimen name="thumb_zoom_badge_size">28dp</dimen>
 </resources>
